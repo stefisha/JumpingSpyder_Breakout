@@ -1,0 +1,412 @@
+{
+  "name": "JumpingSpyder",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "2028633531",
+        "text": "=📈 New Trading Signal Detected 📈\n\nFrom: @{{ $vars.account }}  \nSignal: {{ $json.signal == \"BUY\" ? \"🟢 BUY\" : \"🔴 SELL\" }}  \nTweet: \"{{ $json.tweet }}\"\nReason: {{ $json.reason }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        -160
+      ],
+      "id": "3bead402-c58d-4041-a8df-41647e59709b",
+      "webhookId": "2060880a-554a-4cd7-9984-84190b06b3f0",
+      "credentials": {
+        "telegramApi": {
+          "id": "lL1UlSgHq1WBmHWX",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        -860
+      ],
+      "id": "845bff39-f9f5-49ed-b54a-fbe5302129dc",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "searchText": "=from: {{$vars.account}}",
+        "additionalFields": {
+          "sortOrder": "recency",
+          "tweetFieldsObject": [
+            "created_at"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -860,
+        -460
+      ],
+      "id": "1d29295c-75e0-43c0-89bf-dc0c3f96a1da",
+      "name": "X",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "YnPESMeOFQYchtLO",
+          "name": "X account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "GPT-4"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are an expert crypto analyst. Detect scams and generate trading signals from tweets.",
+              "role": "system"
+            },
+            {
+              "content": "=Tweet: \"{{ $json.text }}\"\n\nIs this a scam or trading signal? Respond in JSON format:\n\n{\n  \"tweet\": \"...original tweet text...\",\n  \"scam\": true|false,\n  \"signal\": \"BUY\" | \"SELL\" | \"IGNORE\",\n  \"reason\": \"Brief, punchy explanation (1–2 sentences max). Focus on sentiment or signal logic. Assume I am a trader.\"\n}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -300,
+        -460
+      ],
+      "id": "861fbc44-cb66-44cb-919a-728d192aae04",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "jLIbgGoPRjEUIVZE",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $json.message.content;\nconst parsed = JSON.parse(content);\n\nreturn [{\n  json: {\n    tweet: parsed.tweet,\n    scam: parsed.scam,\n    signal: parsed.signal,\n    reason: parsed.reason\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -760,
+        -140
+      ],
+      "id": "125f5cdb-f1b5-4c95-8b0c-655f73ed5100",
+      "name": "Code00"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: items[0].json\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        -460
+      ],
+      "id": "a14c6808-0044-466c-9460-6c4435aa62c2",
+      "name": "Code to Fetch Latest"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a9036596-b719-4de2-9465-d495d829e5eb",
+              "leftValue": "={{$json.signal}}",
+              "rightValue": "IGNORE",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -500,
+        -140
+      ],
+      "id": "72c77fd8-1832-494c-ad40-6196b732e20e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "2028633531",
+        "text": "=⚠️ False Signal Ignored (Debug Only) ⚠️\n\nFrom: @{{ $vars.account }}\nTweet: \"{{ $json.tweet }}\"\nReason: {{ $json.reason }}\n",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "name": "Send to Telegram1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        20
+      ],
+      "id": "7d35eadd-0ec9-4bd4-bcb3-7f51bd3aec7e",
+      "webhookId": "2060880a-554a-4cd7-9984-84190b06b3f0",
+      "credentials": {
+        "telegramApi": {
+          "id": "lL1UlSgHq1WBmHWX",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n  \"created_at\": \"2025-05-06T21:17:04.000Z\",\n  \"text\": \"I'm feeling bullish on DOGE 🐶\",\n  \"id\": \"1919864010494599218\",\n  \"edit_history_tweet_ids\": [\n    \"1919864010494599218\"\n  ]\n}\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        -620
+      ],
+      "id": "7180e661-b921-4679-8967-332449be7584",
+      "name": "Sample data"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1120,
+        -900
+      ],
+      "id": "0ce54275-fb43-4b56-bd5d-9d5a11ebb63c",
+      "name": "Telegram Trigger",
+      "webhookId": "fdbb0a7b-360a-4ca8-8cba-3563a8092534",
+      "credentials": {
+        "telegramApi": {
+          "id": "lL1UlSgHq1WBmHWX",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a9036596-b719-4de2-9465-d495d829e5eb",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -840,
+        -900
+      ],
+      "id": "edd5574d-da2b-468a-b03a-71dfacd0ae40",
+      "name": "If1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Bot started ✅\\nUse /set @username to follow someone.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -600,
+        -920
+      ],
+      "id": "200bd041-0f2d-4a00-9129-036845a27561",
+      "name": "Telegram",
+      "webhookId": "e9d557d7-e313-41dc-8f39-7403d3051564",
+      "credentials": {
+        "telegramApi": {
+          "id": "lL1UlSgHq1WBmHWX",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "X": {
+      "main": [
+        [
+          {
+            "node": "Code to Fetch Latest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Code00",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code00": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code to Fetch Latest": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Telegram": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send to Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Telegram1": {
+      "main": [
+        []
+      ]
+    },
+    "Sample data": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "26ada656-d612-47f0-bfd6-d6817a2db35f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6c8e2a7656ee07ba410ff2808aeba64a6bbbf5511c103cccf06f745d2deac19d"
+  },
+  "id": "xlUVXIcTCFXUgBCq",
+  "tags": []
+}
