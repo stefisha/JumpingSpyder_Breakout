@@ -14,21 +14,13 @@ function getPublicKeyForUserId(userId){
   return keypair.publicKey.toBase58();
 }
  
-async function checkBalances(publicKey) {
+async function checkBalance(publicKey) {
   const connection = new Connection('https://api.mainnet-beta.solana.com/');
   const balance = await connection.getBalance(new PublicKey(publicKey));
   return balance / 1e9; // Convert lamports to SOL
 }
- 
-checkBalances()
-  .then(() => {
-    console.log('Balances checked successfully');
-  })
-  .catch((error) => {
-    console.error('Error checking balances:', error);
-  });
 
 module.exports = {
   getPublicKeyForUserId,
-//   checkBalances
+  checkBalance
 };
