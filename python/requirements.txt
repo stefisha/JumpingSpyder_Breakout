@@ -1,5 +1,0 @@
-python-telegram-bot==20.0
-solana==0.25.0
-httpx==0.23.3
-solders
-python-dotenv

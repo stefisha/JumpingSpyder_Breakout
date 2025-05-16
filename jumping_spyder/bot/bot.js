@@ -1,5 +1,6 @@
 const { Telegraf } = require('telegraf');
 require('dotenv').config();
+const { getPublicKeyForUserId } = require('../solana/paymentGate');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -90,6 +91,19 @@ bot.command('settings', (ctx) => ctx.reply(responses.settings, { parse_mode: 'Ma
 bot.action('settings', async (ctx) => {
   await ctx.answerCbQuery();
   await ctx.editMessageText(responses.settings, { parse_mode: 'Markdown' });
+});
+
+// Public key command
+bot.command('subscribe', async (ctx) => {
+  const userId = ctx.from.id;
+  const publicKey = getPublicKeyForUserId(userId);
+  const balance = await checkBalances(publicKey);
+  if (balance > 0.0001) {
+    ctx.reply(`You are subscribed! You have ${balance} SOL on your public key: ${publicKey}`);
+  }
+  else {
+    ctx.reply(`You are not subscribed! \nPlease top up your account with 0.01 SOL on your public key: ${publicKey}`);
+  }
 });
 
 // Fallback
