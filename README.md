@@ -30,7 +30,7 @@
 
 ## Key Files
 
-- [`bot/bot.js`](jumping_spyder/bot.js):  
+- [`bot.js`](jumping_spyder/bot.js):  
   Main Telegram bot logic, commands, and responses.
 
 - [`solana/paymentGate.js`](jumping_spyder/solana/paymentGate.js):  
