@@ -1,8 +1,8 @@
-# Jumpy_Bot Documentation
+# Jumping Spyder
 
 ## Overview
 
-**Jumpy_Bot** is a JavaScript powered Telegram bot for crypto traders, focused on Solana. It provides real-time sentiment signals, lets users track tokens, and manages premium access using Solana wallet balances. The bot is built with [Telegraf](https://telegraf.js.org/) and integrates with Solana via deterministic wallet generation.
+**Jumpy** is a JavaScript powered Telegram bot for crypto traders, focused on Solana. It provides real-time sentiment signals, lets users track tokens, and manages premium access using Solana wallet balances. The bot is built with [Telegraf](https://telegraf.js.org/) and integrates with Solana via deterministic wallet generation.
 
 ---
 
