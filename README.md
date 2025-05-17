@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Jumpy_Bot** is a Node.js Telegram bot for crypto traders, focused on Solana. It provides real-time sentiment signals, lets users track tokens, and manages premium access using Solana wallet balances. The bot is built with [Telegraf](https://telegraf.js.org/) and integrates with Solana via deterministic wallet generation.
+**Jumpy_Bot** is a JavaScript powered Telegram bot for crypto traders, focused on Solana. It provides real-time sentiment signals, lets users track tokens, and manages premium access using Solana wallet balances. The bot is built with [Telegraf](https://telegraf.js.org/) and integrates with Solana via deterministic wallet generation.
 
 ---
 
@@ -21,7 +21,7 @@
   `/help` and `/feedback` provide detailed instructions and a way to send suggestions or bug reports.
 
 - **Settings:**  
-  `/settings` (and button) previews upcoming customization features.
+  `/settings` previews upcoming customization features.
 
 - **Solana Wallet Integration:**  
   `/subscribe` generates a unique Solana public key for each user (based on their Telegram user ID) and checks their SOL balance. Users must deposit SOL to unlock premium features.
@@ -30,7 +30,7 @@
 
 ## Key Files
 
-- [`bot/bot.js`](jumping_spyder/bot/bot.js):  
+- [`bot/bot.js`](jumping_spyder/bot.js):  
   Main Telegram bot logic, commands, and responses.
 
 - [`solana/paymentGate.js`](jumping_spyder/solana/paymentGate.js):  
@@ -46,11 +46,11 @@
    ```
 
 2. **Configure environment:**
-   - Copy `.env.example` to `.env` and fill in your secrets (Telegram bot token, Solana mnemonic, etc.).
+   - Copy `.env.example` to `.env` and fill in your secrets (Telegram token, X Api Key, Solana mnemonic, etc.). Set the accounts you want to follow and you are set!
 
 3. **Run the bot:**
    ```bash
-   node jumping_spyder/bot/bot.js
+   node jumping_spyder/bot.js
    ```
 
 ---
@@ -78,11 +78,13 @@ See `.env` for required configuration:
 - `MNEMONIC` — Solana wallet mnemonic
 - `TELEGRAM_CHANNEL_ID` — Channel/user for alerts
 - (and others for Twitter/OpenAI integration)
-
 ---
+
+## Demo
+WIP version available at: https://t.me/jumpys_bot.
 
 ## License
 
-MIT License © 2025 Stefan Veličković
+MIT License © 2025 Jumping Spyder
 
 ---
